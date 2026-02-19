@@ -1,5 +1,14 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: service_types
+#
+#  id         :integer          not null, primary key
+#  name       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
 class ServiceType < ApplicationRecord
   has_many :service_logs, dependent: :restrict_with_error
   has_many :reminders, dependent: :restrict_with_error
