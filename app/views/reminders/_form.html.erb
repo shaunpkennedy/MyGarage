@@ -1,0 +1,49 @@
+<%= form_with model: [@vehicle, reminder], local: true do |f| %>
+  <% if reminder.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% reminder.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :service_type_id, 'Service Type', class: 'form-label' %>
+      <%= f.collection_select :service_type_id, ServiceType.order(:name), :id, :name,
+          { prompt: 'Select service type...' }, { class: 'form-select', required: true } %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :reminder_type_id, 'Reminder Type', class: 'form-label' %>
+      <%= f.collection_select :reminder_type_id, ReminderType.all, :id, :name,
+          { prompt: 'Select type...' }, { class: 'form-select' } %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <%= f.label :miles, 'Every X Miles', class: 'form-label' %>
+      <%= f.number_field :miles, class: 'form-control', min: 0, placeholder: 'e.g. 5000' %>
+    </div>
+    <div class="col-md-4 mb-3">
+      <%= f.label :next_odometer, 'Next Due At (Odometer)', class: 'form-label' %>
+      <%= f.number_field :next_odometer, class: 'form-control', min: 0 %>
+    </div>
+    <div class="col-md-4 mb-3">
+      <%= f.label :time, 'Every X Months', class: 'form-label' %>
+      <%= f.number_field :time, class: 'form-control', min: 0 %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :notes, class: 'form-label' %>
+    <%= f.text_area :notes, class: 'form-control', rows: 3, placeholder: 'Any additional details...' %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', vehicle_reminders_path(@vehicle), class: 'btn btn-outline-secondary' %>
+  </div>
+<% end %>

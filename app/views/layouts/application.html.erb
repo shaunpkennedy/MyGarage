@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "My Garage" %></title>
+    <title><%= @page_title ? "#{@page_title} | My Garage" : "My Garage" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
@@ -18,6 +18,72 @@
   </head>
 
   <body>
-    <%= yield %>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <%= link_to 'My Garage', root_path, class: 'navbar-brand fw-bold' %>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <% if logged_in? %>
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <%= link_to 'Vehicles', vehicles_path, class: 'nav-link' %>
+              </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+              <%= link_to 'Add Vehicle', new_vehicle_path, class: 'btn btn-sm btn-outline-light' %>
+
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  <%= current_user.username %>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><%= link_to 'Edit Profile', edit_profile_path, class: 'dropdown-item' %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= link_to 'Log Out', logout_path, class: 'dropdown-item' %></li>
+                </ul>
+              </div>
+            </div>
+          <% else %>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <%= link_to 'Log In', login_path, class: 'nav-link' %>
+              </li>
+              <li class="nav-item">
+                <%= link_to 'Sign Up', signup_path, class: 'nav-link' %>
+              </li>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <% if flash[:notice] %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= flash[:notice] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= flash[:alert] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="bg-dark text-light py-3 mt-auto">
+      <div class="container text-center">
+        <small>My Garage &copy; <%= Date.current.year %></small>
+      </div>
+    </footer>
   </body>
 </html>

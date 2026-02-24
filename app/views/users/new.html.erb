@@ -1,0 +1,13 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="card-title text-center mb-4">Sign Up</h2>
+        <%= render 'form', user: @user %>
+        <p class="text-center mt-3 mb-0">
+          Already have an account? <%= link_to 'Log in', login_path %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

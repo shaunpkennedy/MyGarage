@@ -1,0 +1,194 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2><%= @vehicle.title %></h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <%= link_to 'Edit', edit_vehicle_path(@vehicle), class: 'btn btn-outline-secondary btn-sm me-2' %>
+    <%= link_to 'Back', vehicles_path, class: 'btn btn-outline-secondary btn-sm' %>
+  </div>
+</div>
+
+<!-- Odometer -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <h6 class="text-muted">Current Odometer</h6>
+        <h2 class="display-5 fw-bold"><%= number_with_delimiter(@vehicle.current_odometer || 0) %> <small class="text-muted fs-6">miles</small></h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <h6 class="text-muted">Miles Logged</h6>
+        <h2 class="display-5 fw-bold"><%= number_with_delimiter(@vehicle.miles_logged) %> <small class="text-muted fs-6">miles</small></h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MPG Stats -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0">Fuel Efficiency</h5></div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= @vehicle.overall_mpg %></div>
+            <div class="stat-label">Average MPG</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= @vehicle.most_recent_mpg || '—' %></div>
+            <div class="stat-label">Last MPG</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= @vehicle.previous_mpg || '—' %></div>
+            <div class="stat-label">Previous MPG</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= @vehicle.best_mpg || '—' %></div>
+            <div class="stat-label">Best MPG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cost Stats -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0">Cost Analysis</h5></div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= number_to_currency(@vehicle.cost_per_mile) %></div>
+            <div class="stat-label">Cost per Mile</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= number_to_currency(@vehicle.average_cost_per_fill_up) %></div>
+            <div class="stat-label">Avg Fill-Up</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= number_to_currency(@vehicle.average_cost_per_gallon) %></div>
+            <div class="stat-label">Avg $/Gallon</div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-value"><%= number_to_currency(@vehicle.fuel_total_cost + @vehicle.service_total_cost) %></div>
+            <div class="stat-label">Total Spent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="d-flex gap-2 flex-wrap">
+      <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
+      <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
+      <%= link_to 'Add Reminder', new_vehicle_reminder_path(@vehicle), class: 'btn btn-warning' %>
+      <%= link_to 'Fuel History', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>
+      <%= link_to 'Service History', vehicle_service_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>
+    </div>
+  </div>
+</div>
+
+<!-- Active Reminders -->
+<% if @vehicle.active_reminders.any? %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Service Reminders</h5>
+          <%= link_to 'View All', vehicle_reminders_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Type</th>
+                <th>Next At</th>
+                <th>Miles Remaining</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @vehicle.active_reminders.includes(:service_type, :reminder_type).each do |reminder| %>
+                <tr class="<%= 'table-danger' if reminder.overdue? %>">
+                  <td><%= reminder.service_type.name %></td>
+                  <td><%= reminder.reminder_type&.name %></td>
+                  <td><%= reminder.next_odometer ? number_with_delimiter(reminder.next_odometer) : '—' %></td>
+                  <td>
+                    <% if reminder.miles_remaining %>
+                      <% if reminder.overdue? %>
+                        <span class="text-danger fw-bold">Overdue by <%= number_with_delimiter(reminder.miles_remaining.abs) %> mi</span>
+                      <% else %>
+                        <%= number_with_delimiter(reminder.miles_remaining) %> mi
+                      <% end %>
+                    <% else %>
+                      —
+                    <% end %>
+                  </td>
+                  <td><%= reminder.notes %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Recent Fuel Logs -->
+<% recent_fuel_logs = @vehicle.fuel_logs.order(log_date: :desc).limit(5) %>
+<% if recent_fuel_logs.any? %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Recent Fill-Ups</h5>
+          <%= link_to 'View All', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Odometer</th>
+                <th>Gallons</th>
+                <th>$/Gal</th>
+                <th>Total</th>
+                <th>MPG</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recent_fuel_logs.each do |log| %>
+                <tr>
+                  <td><%= log.log_date&.strftime('%b %d, %Y') %></td>
+                  <td><%= number_with_delimiter(log.odometer) %></td>
+                  <td><%= log.gallons %></td>
+                  <td><%= number_to_currency(log.price_per_gallon) %></td>
+                  <td><%= number_to_currency(log.total_cost) %></td>
+                  <td><%= log.mpg || '—' %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<div class="text-end">
+  <%= link_to 'Delete Vehicle', @vehicle, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{@vehicle.title}? This will remove all associated logs and reminders." }, class: 'btn btn-outline-danger btn-sm' %>
+</div>

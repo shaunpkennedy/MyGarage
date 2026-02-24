@@ -1,0 +1,38 @@
+<%= form_with model: user, local: true do |f| %>
+  <% if user.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :username, class: 'form-label' %>
+    <%= f.text_field :username, class: 'form-control', required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :email, class: 'form-label' %>
+    <%= f.email_field :email, class: 'form-control', required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :password, class: 'form-label' %>
+    <%= f.password_field :password, class: 'form-control' %>
+    <% if user.persisted? %>
+      <div class="form-text">Leave blank to keep current password.</div>
+    <% end %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :password_confirmation, class: 'form-label' %>
+    <%= f.password_field :password_confirmation, class: 'form-control' %>
+  </div>
+
+  <div class="d-grid">
+    <%= f.submit user.persisted? ? 'Update Profile' : 'Sign Up', class: 'btn btn-primary' %>
+  </div>
+<% end %>

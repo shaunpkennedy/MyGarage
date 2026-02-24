@@ -1,0 +1,49 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Service History — <%= @vehicle.title %></h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info me-2' %>
+    <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
+  </div>
+</div>
+
+<% if @service_logs.any? %>
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Service Type</th>
+            <th>Odometer</th>
+            <th>Cost</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @service_logs.each do |log| %>
+            <tr>
+              <td><%= log.log_date&.strftime('%b %d, %Y') %></td>
+              <td><%= log.service_type.name %></td>
+              <td><%= number_with_delimiter(log.odometer) %></td>
+              <td><%= number_to_currency(log.total_cost) %></td>
+              <td><%= truncate(log.notes, length: 40) %></td>
+              <td class="text-end">
+                <%= link_to 'Edit', edit_vehicle_service_log_path(@vehicle, log), class: 'btn btn-sm btn-outline-secondary me-1' %>
+                <%= link_to 'Delete', vehicle_service_log_path(@vehicle, log), data: { turbo_method: :delete, turbo_confirm: 'Delete this service record?' }, class: 'btn btn-sm btn-outline-danger' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <p class="text-muted">No service records yet for this vehicle.</p>
+    <%= link_to 'Record First Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
+  </div>
+<% end %>

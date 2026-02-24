@@ -1,0 +1,35 @@
+<div class="row justify-content-center mt-4">
+  <div class="col-md-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2>Service Details</h2>
+      <div>
+        <%= link_to 'Edit', edit_vehicle_service_log_path(@vehicle, @service_log), class: 'btn btn-outline-secondary btn-sm me-2' %>
+        <%= link_to 'Back', vehicle_service_logs_path(@vehicle), class: 'btn btn-outline-secondary btn-sm' %>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4">Vehicle</dt>
+          <dd class="col-sm-8"><%= @vehicle.display_name %></dd>
+
+          <dt class="col-sm-4">Date</dt>
+          <dd class="col-sm-8"><%= @service_log.log_date&.strftime('%B %d, %Y') %></dd>
+
+          <dt class="col-sm-4">Service Type</dt>
+          <dd class="col-sm-8"><%= @service_log.service_type.name %></dd>
+
+          <dt class="col-sm-4">Odometer</dt>
+          <dd class="col-sm-8"><%= number_with_delimiter(@service_log.odometer) %> miles</dd>
+
+          <dt class="col-sm-4">Cost</dt>
+          <dd class="col-sm-8"><%= number_to_currency(@service_log.total_cost) %></dd>
+
+          <dt class="col-sm-4">Notes</dt>
+          <dd class="col-sm-8"><%= @service_log.notes.presence || '—' %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

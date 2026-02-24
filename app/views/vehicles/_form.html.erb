@@ -1,0 +1,53 @@
+<%= form_with model: vehicle, local: true do |f| %>
+  <% if vehicle.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% vehicle.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :title, 'Nickname', class: 'form-label' %>
+      <%= f.text_field :title, class: 'form-control', placeholder: 'e.g. Daily Driver', required: true %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :year, class: 'form-label' %>
+      <%= f.number_field :year, class: 'form-control', min: 1900, max: Date.current.year + 2 %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :make, class: 'form-label' %>
+      <%= f.text_field :make, class: 'form-control', placeholder: 'e.g. Toyota' %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :model, class: 'form-label' %>
+      <%= f.text_field :model, class: 'form-control', placeholder: 'e.g. Camry' %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <%= f.label :current_odometer, 'Current Odometer', class: 'form-label' %>
+      <%= f.number_field :current_odometer, class: 'form-control', min: 0 %>
+    </div>
+    <div class="col-md-4 mb-3">
+      <%= f.label :oil_change_frequency, 'Oil Change Every (miles)', class: 'form-label' %>
+      <%= f.number_field :oil_change_frequency, class: 'form-control', min: 0, placeholder: 'e.g. 5000' %>
+    </div>
+    <div class="col-md-4 mb-3">
+      <%= f.label :tire_rotation_frequency, 'Tire Rotation Every (miles)', class: 'form-label' %>
+      <%= f.number_field :tire_rotation_frequency, class: 'form-control', min: 0, placeholder: 'e.g. 7500' %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', vehicles_path, class: 'btn btn-outline-secondary' %>
+  </div>
+<% end %>
