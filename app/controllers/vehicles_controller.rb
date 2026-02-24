@@ -3,7 +3,9 @@ class VehiclesController < ApplicationController
   before_action :set_vehicle, only: %i[show edit update destroy]
 
   def index
-    @vehicles = current_user.vehicles.order(:title)
+    @vehicles = current_user.vehicles
+      .includes(:fuel_logs, reminders: :service_type)
+      .order(:title)
   end
 
   def show
@@ -45,7 +47,9 @@ class VehiclesController < ApplicationController
   private
 
   def set_vehicle
-    @vehicle = current_user.vehicles.find(params[:id])
+    @vehicle = current_user.vehicles
+      .includes(:fuel_logs, :service_logs, reminders: [:service_type, :reminder_type])
+      .find(params[:id])
   end
 
   def vehicle_params

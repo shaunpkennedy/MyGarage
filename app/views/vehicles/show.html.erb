@@ -109,7 +109,7 @@
           <h5 class="mb-0">Service Reminders</h5>
           <%= link_to 'View All', vehicle_reminders_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
         </div>
-        <div class="card-body p-0">
+        <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead>
               <tr>
@@ -121,7 +121,7 @@
               </tr>
             </thead>
             <tbody>
-              <% @vehicle.active_reminders.includes(:service_type, :reminder_type).each do |reminder| %>
+              <% @vehicle.active_reminders.each do |reminder| %>
                 <tr class="<%= 'table-danger' if reminder.overdue? %>">
                   <td><%= reminder.service_type.name %></td>
                   <td><%= reminder.reminder_type&.name %></td>
@@ -158,7 +158,7 @@
           <h5 class="mb-0">Recent Fill-Ups</h5>
           <%= link_to 'View All', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
         </div>
-        <div class="card-body p-0">
+        <div class="table-responsive">
           <table class="table table-hover mb-0">
             <thead>
               <tr>

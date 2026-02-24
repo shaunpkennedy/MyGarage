@@ -1,0 +1,13 @@
+oil_reminder:
+  vehicle: civic
+  service_type: oil_change
+  reminder_type: by_mileage
+  miles: 5000
+  next_odometer: 55000
+
+overdue_reminder:
+  vehicle: civic
+  service_type: tire_rotation
+  reminder_type: by_mileage
+  miles: 7500
+  next_odometer: 49000

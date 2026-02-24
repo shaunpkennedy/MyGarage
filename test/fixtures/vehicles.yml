@@ -1,0 +1,25 @@
+civic:
+  user: shaun
+  title: Daily Driver
+  make: Honda
+  model: Civic
+  year: 2020
+  current_odometer: 50000
+  oil_change_frequency: 5000
+  tire_rotation_frequency: 7500
+
+truck:
+  user: shaun
+  title: Work Truck
+  make: Ford
+  model: F150
+  year: 2018
+  current_odometer: 80000
+
+jane_car:
+  user: jane
+  title: Jane's Car
+  make: Toyota
+  model: Camry
+  year: 2022
+  current_odometer: 20000

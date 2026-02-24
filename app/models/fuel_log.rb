@@ -29,9 +29,25 @@ class FuelLog < ApplicationRecord
 
   validates :vehicle_id, :odometer, :gallons, presence: true
 
+  before_save :calculate_miles_and_mpg
   after_save :update_vehicle_odometer
 
   private
+
+  def calculate_miles_and_mpg
+    previous_log = vehicle.fuel_logs
+      .where.not(id: id)
+      .where("odometer < ?", odometer)
+      .order(odometer: :desc)
+      .first
+
+    if previous_log
+      self.miles = odometer - previous_log.odometer
+      self.mpg = (miles.to_f / gallons).round(1) if gallons&.positive?
+    end
+
+    self.total_cost = (price_per_gallon * gallons).round(2) if price_per_gallon&.positive? && gallons&.positive? && total_cost.blank?
+  end
 
   def update_vehicle_odometer
     vehicle.update_current_odometer!

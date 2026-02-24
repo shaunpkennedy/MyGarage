@@ -5,13 +5,18 @@ class FuelLogsController < ApplicationController
 
   def index
     @fuel_logs = @vehicle.fuel_logs.order(log_date: :desc)
+    @fuel_logs = @fuel_logs.where("log_date >= ?", params[:from]) if params[:from].present?
+    @fuel_logs = @fuel_logs.where("log_date <= ?", params[:to]) if params[:to].present?
   end
 
   def show
   end
 
   def new
-    @fuel_log = @vehicle.fuel_logs.build(log_date: Date.current)
+    @fuel_log = @vehicle.fuel_logs.build(
+      log_date: Date.current,
+      odometer: @vehicle.current_odometer
+    )
   end
 
   def create
@@ -55,7 +60,7 @@ class FuelLogsController < ApplicationController
 
   def fuel_log_params
     params.require(:fuel_log).permit(
-      :log_date, :odometer, :price_per_gallon, :gallons, :total_cost, :miles, :mpg
+      :log_date, :odometer, :price_per_gallon, :gallons, :total_cost
     )
   end
 end

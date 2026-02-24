@@ -11,7 +11,10 @@ class ServiceLogsController < ApplicationController
   end
 
   def new
-    @service_log = @vehicle.service_logs.build(log_date: Date.current)
+    @service_log = @vehicle.service_logs.build(
+      log_date: Date.current,
+      odometer: @vehicle.current_odometer
+    )
   end
 
   def create

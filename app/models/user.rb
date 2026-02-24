@@ -22,6 +22,7 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
+  validates :password, length: { minimum: 8 }, if: -> { new_record? || password.present? }
 
   def self.authenticate(username, password)
     user = find_by(username: username)

@@ -1,0 +1,7 @@
+oil_change_one:
+  vehicle: civic
+  log_date: 2025-01-10
+  odometer: 49700
+  service_type: oil_change
+  total_cost: 45.00
+  notes: Synthetic oil

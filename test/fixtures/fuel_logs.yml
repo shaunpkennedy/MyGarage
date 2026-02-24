@@ -1,0 +1,17 @@
+first_fill:
+  vehicle: civic
+  log_date: 2025-01-01
+  odometer: 49500
+  price_per_gallon: 3.299
+  gallons: 12.500
+  total_cost: 41.24
+
+second_fill:
+  vehicle: civic
+  log_date: 2025-01-15
+  odometer: 49800
+  price_per_gallon: 3.199
+  gallons: 10.000
+  total_cost: 31.99
+  miles: 300
+  mpg: 30.0
