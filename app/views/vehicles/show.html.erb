@@ -128,6 +128,45 @@
   </div>
 </div>
 
+<!-- Budget Status -->
+<% if @budgets.any? %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Budget Status</h5>
+          <%= link_to 'Manage Budgets', vehicle_budgets_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
+        </div>
+        <div class="card-body">
+          <% @budgets.each do |budget| %>
+            <%
+              pct = budget.percentage_used
+              spent = budget.current_spent
+              bar_class = case budget.status
+                          when :exceeded then 'bg-danger'
+                          when :approaching then 'bg-warning'
+                          else 'bg-success'
+                          end
+            %>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong><%= budget.category.titleize %> (<%= budget.period.titleize %>)</strong>
+                <span class="text-muted small">
+                  <%= number_to_currency(spent) %> / <%= number_to_currency(budget.amount) %>
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar <%= bar_class %>" role="progressbar" style="width: <%= [pct, 100].min %>%"></div>
+              </div>
+              <small class="text-muted"><%= pct %>% used</small>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <!-- Quick Actions -->
 <div class="row mb-4">
   <div class="col-12">
@@ -135,6 +174,7 @@
       <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
       <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
       <%= link_to 'Add Reminder', new_vehicle_reminder_path(@vehicle), class: 'btn btn-warning' %>
+      <%= link_to 'Budgets', vehicle_budgets_path(@vehicle), class: 'btn btn-outline-success' %>
       <%= link_to 'Reports', vehicle_report_path(@vehicle), class: 'btn btn-primary' %>
       <%= link_to 'Cost Summary', vehicle_cost_summary_path(@vehicle), class: 'btn btn-outline-primary' %>
       <%= link_to 'Vehicle History', vehicle_history_path(@vehicle), class: 'btn btn-outline-dark' %>

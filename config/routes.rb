@@ -25,6 +25,7 @@ Rails.application.routes.draw do
         post :import
       end
     end
+    resources :budgets
     resources :reminders do
       member do
         patch :complete

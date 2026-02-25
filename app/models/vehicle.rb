@@ -29,6 +29,7 @@ class Vehicle < ApplicationRecord
   has_many :fuel_logs, dependent: :destroy
   has_many :service_logs, dependent: :destroy
   has_many :reminders, dependent: :destroy
+  has_many :budgets, dependent: :destroy
 
   validates :user_id, :title, presence: true
   validates :title, uniqueness: { scope: :user_id, message: 'must be unique per user' }

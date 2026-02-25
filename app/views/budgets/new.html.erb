@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>New Budget — <%= @vehicle.title %></h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <%= render 'form', budget: @budget %>
+  </div>
+</div>

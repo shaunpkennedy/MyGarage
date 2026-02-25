@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_25_054524) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_25_055806) do
+  create_table "budgets", force: :cascade do |t|
+    t.decimal "amount", precision: 8, scale: 2, null: false
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.string "period", null: false
+    t.datetime "updated_at", null: false
+    t.integer "vehicle_id", null: false
+    t.index ["vehicle_id", "category", "period"], name: "index_budgets_on_vehicle_id_and_category_and_period", unique: true
+    t.index ["vehicle_id"], name: "index_budgets_on_vehicle_id"
+  end
+
   create_table "fuel_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "gallons", precision: 6, scale: 3
@@ -90,6 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_25_054524) do
     t.index ["user_id"], name: "index_vehicles_on_user_id"
   end
 
+  add_foreign_key "budgets", "vehicles"
   add_foreign_key "fuel_logs", "vehicles"
   add_foreign_key "reminders", "reminder_types"
   add_foreign_key "reminders", "service_types"

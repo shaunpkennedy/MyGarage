@@ -24,6 +24,8 @@ class VehiclesController < ApplicationController
 
     @last_service = @vehicle.service_logs.includes(:service_type).order(log_date: :desc).first
     @next_due = active.select(&:miles_remaining).min_by(&:miles_remaining)
+
+    @budgets = @vehicle.budgets.order(:category, :period)
   end
 
   def new

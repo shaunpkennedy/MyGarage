@@ -20,6 +20,10 @@ class HomeController < ApplicationController
     @overdue_reminders = all_active_reminders.select(&:overdue?)
     @approaching_reminders = all_active_reminders.select { |r| r.miles_remaining&.between?(0, 1000) }
 
+    all_budgets = Budget.joins(:vehicle).where(vehicles: { user_id: current_user.id }).includes(:vehicle)
+    @exceeded_budgets = all_budgets.select { |b| b.status == :exceeded }
+    @approaching_budgets = all_budgets.select { |b| b.status == :approaching }
+
     fuel_entries = FuelLog.joins(:vehicle)
       .where(vehicles: { user_id: current_user.id })
       .order(log_date: :desc)

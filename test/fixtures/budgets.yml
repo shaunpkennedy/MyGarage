@@ -1,0 +1,38 @@
+# == Schema Information
+#
+# Table name: budgets
+#
+#  id         :integer          not null, primary key
+#  amount     :decimal(8, 2)    not null
+#  category   :string           not null
+#  period     :string           not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  vehicle_id :integer          not null
+#
+# Indexes
+#
+#  index_budgets_on_vehicle_id                          (vehicle_id)
+#  index_budgets_on_vehicle_id_and_category_and_period  (vehicle_id,category,period) UNIQUE
+#
+# Foreign Keys
+#
+#  vehicle_id  (vehicle_id => vehicles.id)
+#
+civic_fuel_monthly:
+  vehicle: civic
+  category: fuel
+  period: monthly
+  amount: 200.00
+
+civic_service_yearly:
+  vehicle: civic
+  category: service
+  period: yearly
+  amount: 1000.00
+
+civic_total_monthly:
+  vehicle: civic
+  category: total
+  period: monthly
+  amount: 500.00
