@@ -1,0 +1,22 @@
+MyGarage - Maintenance Reminder
+================================
+
+Hi <%= @user.username %>,
+
+<% if @overdue_reminders.any? %>
+OVERDUE MAINTENANCE (<%= @overdue_reminders.size %>)
+----------------------------
+<% @overdue_reminders.each do |reminder| %>
+- <%= reminder.vehicle.display_name %> — <%= reminder.service_type.name %> — Overdue by <%= number_with_delimiter(reminder.miles_remaining.abs) %> mi
+<% end %>
+
+<% end %>
+<% if @approaching_reminders.any? %>
+APPROACHING MAINTENANCE (<%= @approaching_reminders.size %>)
+----------------------------
+<% @approaching_reminders.each do |reminder| %>
+- <%= reminder.vehicle.display_name %> — <%= reminder.service_type.name %> — <%= number_with_delimiter(reminder.miles_remaining) %> mi remaining
+<% end %>
+
+<% end %>
+Log in to MyGarage to view details and manage your reminders.

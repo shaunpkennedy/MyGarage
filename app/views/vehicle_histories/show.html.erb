@@ -1,0 +1,128 @@
+<%# Print-only header: hidden on screen, shown when printing %>
+<div class="print-only mb-4">
+  <h1 class="fw-bold"><%= @vehicle.display_name %></h1>
+  <p class="text-muted mb-1">Vehicle History Report &mdash; <%= Date.current.strftime('%B %d, %Y') %></p>
+  <p class="text-muted mb-0">Current Odometer: <%= number_with_delimiter(@vehicle.current_odometer || 0) %> miles</p>
+</div>
+
+<%# Screen header: hidden in print %>
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+  <div>
+    <h2>Vehicle History</h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <button onclick="window.print()" class="btn btn-primary me-2"><i class="bi bi-printer me-1"></i>Print</button>
+    <%= link_to 'Back', vehicle_path(@vehicle), class: 'btn btn-outline-secondary' %>
+  </div>
+</div>
+
+<%# Summary %>
+<div class="row mb-4">
+  <div class="col-md-3 col-6 mb-3">
+    <div class="stat-box text-center">
+      <div class="stat-value"><%= @service_logs.size %></div>
+      <div class="stat-label">Service Records</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6 mb-3">
+    <div class="stat-box text-center">
+      <div class="stat-value"><%= @fuel_logs.size %></div>
+      <div class="stat-label">Fuel Records</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6 mb-3">
+    <div class="stat-box text-center">
+      <div class="stat-value"><%= number_to_currency(@total_spent) %></div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6 mb-3">
+    <div class="stat-box text-center">
+      <div class="stat-value"><%= @vehicle.overall_mpg %></div>
+      <div class="stat-label">Average MPG</div>
+    </div>
+  </div>
+</div>
+
+<%# Service History %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0">Service History</h5></div>
+  <% if @service_logs.any? %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Service Type</th>
+            <th>Odometer</th>
+            <th>Cost</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @service_logs.each do |log| %>
+            <tr>
+              <td><%= log.log_date&.strftime('%b %d, %Y') %></td>
+              <td><%= log.service_type.name %></td>
+              <td><%= number_with_delimiter(log.odometer) %></td>
+              <td><%= number_to_currency(log.total_cost) %></td>
+              <td><%= log.notes %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr class="fw-bold">
+            <td colspan="3">Total</td>
+            <td><%= number_to_currency(@vehicle.service_total_cost) %></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  <% else %>
+    <div class="card-body text-muted">No service records.</div>
+  <% end %>
+</div>
+
+<%# Fuel History %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0">Fuel History</h5></div>
+  <% if @fuel_logs.any? %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Odometer</th>
+            <th>Gallons</th>
+            <th>$/Gal</th>
+            <th>Total</th>
+            <th>MPG</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @fuel_logs.each do |log| %>
+            <tr>
+              <td><%= log.log_date&.strftime('%b %d, %Y') %></td>
+              <td><%= number_with_delimiter(log.odometer) %></td>
+              <td><%= log.gallons %></td>
+              <td><%= number_to_currency(log.price_per_gallon) %></td>
+              <td><%= number_to_currency(log.total_cost) %></td>
+              <td><%= log.mpg || '—' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr class="fw-bold">
+            <td colspan="4">Total</td>
+            <td><%= number_to_currency(@vehicle.fuel_total_cost) %></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  <% else %>
+    <div class="card-body text-muted">No fuel records.</div>
+  <% end %>
+</div>

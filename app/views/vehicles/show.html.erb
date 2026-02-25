@@ -1,6 +1,11 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h2><%= @vehicle.title %></h2>
+    <h2>
+      <%= @vehicle.title %>
+      <% if @overdue_reminders.any? %>
+        <span class="badge bg-danger ms-2"><%= @overdue_reminders.size %> overdue</span>
+      <% end %>
+    </h2>
     <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
   </div>
   <div>
@@ -9,27 +14,63 @@
   </div>
 </div>
 
-<!-- Odometer -->
+<!-- Key Info Bar -->
 <div class="row mb-4">
-  <div class="col-md-6">
-    <div class="card shadow-sm text-center">
+  <div class="col-md-3 col-6 mb-3">
+    <div class="card shadow-sm text-center h-100">
       <div class="card-body">
         <h6 class="text-muted">Current Odometer</h6>
-        <h2 class="display-5 fw-bold"><%= number_with_delimiter(@vehicle.current_odometer || 0) %> <small class="text-muted fs-6">miles</small></h2>
+        <h3 class="fw-bold"><%= number_with_delimiter(@vehicle.current_odometer || 0) %></h3>
+        <small class="text-muted">miles</small>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
-    <div class="card shadow-sm text-center">
+  <div class="col-md-3 col-6 mb-3">
+    <div class="card shadow-sm text-center h-100">
       <div class="card-body">
-        <h6 class="text-muted">Miles Logged</h6>
-        <h2 class="display-5 fw-bold"><%= number_with_delimiter(@vehicle.miles_logged) %> <small class="text-muted fs-6">miles</small></h2>
+        <h6 class="text-muted">Average MPG</h6>
+        <h3 class="fw-bold"><%= @vehicle.overall_mpg %></h3>
+        <small class="text-muted">miles/gallon</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6 mb-3">
+    <div class="card shadow-sm text-center h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Last Service</h6>
+        <% if @last_service %>
+          <h3 class="fw-bold"><%= @last_service.service_type.name %></h3>
+          <small class="text-muted"><%= @last_service.log_date&.strftime('%b %d, %Y') %></small>
+        <% else %>
+          <h3 class="fw-bold">&mdash;</h3>
+          <small class="text-muted">No services logged</small>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6 mb-3">
+    <div class="card shadow-sm text-center h-100">
+      <div class="card-body">
+        <h6 class="text-muted">Next Due</h6>
+        <% if @next_due %>
+          <h3 class="fw-bold <%= 'text-danger' if @next_due.overdue? %>"><%= @next_due.service_type.name %></h3>
+          <small class="<%= @next_due.overdue? ? 'text-danger' : 'text-muted' %>">
+            <% if @next_due.overdue? %>
+              Overdue by <%= number_with_delimiter(@next_due.miles_remaining.abs) %> mi
+            <% else %>
+              <%= number_with_delimiter(@next_due.miles_remaining) %> mi remaining
+            <% end %>
+          </small>
+        <% else %>
+          <h3 class="fw-bold">&mdash;</h3>
+          <small class="text-muted">No reminders set</small>
+        <% end %>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MPG Stats -->
+<!-- Fuel Efficiency -->
 <div class="row mb-4">
   <div class="col-12">
     <div class="card shadow-sm">
@@ -58,7 +99,7 @@
   </div>
 </div>
 
-<!-- Cost Stats -->
+<!-- Cost Analysis -->
 <div class="row mb-4">
   <div class="col-12">
     <div class="card shadow-sm">
@@ -96,61 +137,98 @@
       <%= link_to 'Add Reminder', new_vehicle_reminder_path(@vehicle), class: 'btn btn-warning' %>
       <%= link_to 'Reports', vehicle_report_path(@vehicle), class: 'btn btn-primary' %>
       <%= link_to 'Cost Summary', vehicle_cost_summary_path(@vehicle), class: 'btn btn-outline-primary' %>
+      <%= link_to 'Vehicle History', vehicle_history_path(@vehicle), class: 'btn btn-outline-dark' %>
       <%= link_to 'Fuel History', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>
       <%= link_to 'Service History', vehicle_service_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>
     </div>
   </div>
 </div>
 
-<!-- Active Reminders -->
-<% if @vehicle.active_reminders.any? %>
+<!-- Maintenance Status -->
+<% all_reminders = @overdue_reminders + @approaching_reminders + @ok_reminders %>
+<% if all_reminders.any? %>
   <div class="row mb-4">
     <div class="col-12">
       <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Service Reminders</h5>
+          <h5 class="mb-0">
+            Maintenance Status
+            <% if @overdue_reminders.any? %>
+              <span class="badge bg-danger ms-1"><%= @overdue_reminders.size %> overdue</span>
+            <% end %>
+            <% if @approaching_reminders.any? %>
+              <span class="badge bg-warning text-dark ms-1"><%= @approaching_reminders.size %> approaching</span>
+            <% end %>
+          </h5>
           <%= link_to 'View All', vehicle_reminders_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>
         </div>
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead>
-              <tr>
-                <th>Service</th>
-                <th>Type</th>
-                <th>Next At</th>
-                <th>Miles Remaining</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @vehicle.active_reminders.each do |reminder| %>
-                <tr class="<%= 'table-danger' if reminder.overdue? %>">
-                  <td><%= reminder.service_type.name %></td>
-                  <td><%= reminder.reminder_type&.name %></td>
-                  <td><%= reminder.next_odometer ? number_with_delimiter(reminder.next_odometer) : '—' %></td>
-                  <td>
-                    <% if reminder.miles_remaining %>
-                      <% if reminder.overdue? %>
-                        <span class="text-danger fw-bold">Overdue by <%= number_with_delimiter(reminder.miles_remaining.abs) %> mi</span>
-                      <% else %>
-                        <%= number_with_delimiter(reminder.miles_remaining) %> mi
-                      <% end %>
-                    <% else %>
-                      —
-                    <% end %>
-                  </td>
-                  <td><%= reminder.notes %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+        <div class="card-body">
+          <% all_reminders.each do |reminder| %>
+            <%
+              if reminder.overdue?
+                bar_class = 'bg-danger'
+                bar_pct = 100
+              elsif reminder.miles_remaining && reminder.next_odometer && reminder.next_odometer > 0
+                pct = ((reminder.next_odometer - reminder.miles_remaining).to_f / reminder.next_odometer * 100).clamp(0, 100).round
+                bar_pct = pct
+                bar_class = pct >= 80 ? 'bg-warning' : 'bg-success'
+              else
+                bar_pct = 0
+                bar_class = 'bg-success'
+              end
+            %>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong><%= reminder.service_type.name %></strong>
+                <span class="text-muted small">
+                  <% if reminder.overdue? %>
+                    <span class="text-danger fw-bold">Overdue by <%= number_with_delimiter(reminder.miles_remaining.abs) %> mi</span>
+                  <% elsif reminder.miles_remaining %>
+                    Due at <%= number_with_delimiter(reminder.next_odometer) %> mi &middot; <%= number_with_delimiter(reminder.miles_remaining) %> mi remaining
+                  <% else %>
+                    &mdash;
+                  <% end %>
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar <%= bar_class %>" role="progressbar" style="width: <%= bar_pct %>%"></div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
   </div>
 <% end %>
 
-<!-- Recent Fuel Logs -->
+<!-- Recent Activity -->
+<% if @recent_activity.any? %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><h5 class="mb-0">Recent Activity</h5></div>
+        <ul class="list-group list-group-flush">
+          <% @recent_activity.each do |entry| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <% if entry[:type] == :fuel %>
+                  <span class="badge bg-success me-2"><i class="bi bi-fuel-pump"></i></span>
+                <% else %>
+                  <span class="badge bg-primary me-2"><i class="bi bi-wrench"></i></span>
+                <% end %>
+                <strong><%= entry[:description] %></strong>
+                <small class="text-muted ms-2"><%= entry[:date]&.strftime('%b %d, %Y') %></small>
+              </div>
+              <span class="fw-bold"><%= number_to_currency(entry[:cost]) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Recent Fill-Ups -->
 <% recent_fuel_logs = @vehicle.fuel_logs.order(log_date: :desc).limit(5) %>
 <% if recent_fuel_logs.any? %>
   <div class="row mb-4">

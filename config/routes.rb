@@ -32,6 +32,7 @@ Rails.application.routes.draw do
     end
     resource :report, only: [:show]
     resource :cost_summary, only: [:show]
+    resource :history, only: [:show], controller: 'vehicle_histories'
   end
 
   # Health check

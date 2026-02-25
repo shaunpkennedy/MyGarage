@@ -1,0 +1,62 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #333;">
+  <div style="background: #1a1a2e; color: #fff; padding: 20px; text-align: center;">
+    <h1 style="margin: 0; font-size: 24px;">MyGarage</h1>
+    <p style="margin: 5px 0 0; opacity: 0.8;">Maintenance Reminder</p>
+  </div>
+
+  <div style="padding: 20px;">
+    <p>Hi <%= @user.username %>,</p>
+
+    <% if @overdue_reminders.any? %>
+      <h2 style="color: #dc3545; font-size: 18px; border-bottom: 2px solid #dc3545; padding-bottom: 8px;">
+        Overdue Maintenance (<%= @overdue_reminders.size %>)
+      </h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background: #f8f9fa;">
+          <th style="text-align: left; padding: 8px; border-bottom: 1px solid #dee2e6;">Vehicle</th>
+          <th style="text-align: left; padding: 8px; border-bottom: 1px solid #dee2e6;">Service</th>
+          <th style="text-align: right; padding: 8px; border-bottom: 1px solid #dee2e6;">Overdue By</th>
+        </tr>
+        <% @overdue_reminders.each do |reminder| %>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;"><%= reminder.vehicle.display_name %></td>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;"><%= reminder.service_type.name %></td>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6; text-align: right; color: #dc3545; font-weight: bold;">
+              <%= number_with_delimiter(reminder.miles_remaining.abs) %> mi
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    <% end %>
+
+    <% if @approaching_reminders.any? %>
+      <h2 style="color: #ffc107; font-size: 18px; border-bottom: 2px solid #ffc107; padding-bottom: 8px;">
+        Approaching Maintenance (<%= @approaching_reminders.size %>)
+      </h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background: #f8f9fa;">
+          <th style="text-align: left; padding: 8px; border-bottom: 1px solid #dee2e6;">Vehicle</th>
+          <th style="text-align: left; padding: 8px; border-bottom: 1px solid #dee2e6;">Service</th>
+          <th style="text-align: right; padding: 8px; border-bottom: 1px solid #dee2e6;">Miles Remaining</th>
+        </tr>
+        <% @approaching_reminders.each do |reminder| %>
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;"><%= reminder.vehicle.display_name %></td>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6;"><%= reminder.service_type.name %></td>
+            <td style="padding: 8px; border-bottom: 1px solid #dee2e6; text-align: right;">
+              <%= number_with_delimiter(reminder.miles_remaining) %> mi
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    <% end %>
+
+    <p style="color: #666; font-size: 14px; margin-top: 20px;">
+      Log in to MyGarage to view details and manage your reminders.
+    </p>
+  </div>
+
+  <div style="background: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #999;">
+    <p style="margin: 0;">You're receiving this because you have active maintenance reminders in MyGarage.</p>
+  </div>
+</div>
