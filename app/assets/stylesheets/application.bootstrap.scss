@@ -46,3 +46,14 @@ body {
 main {
   flex: 1;
 }
+
+// Chart containers
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+
+  canvas {
+    max-height: 400px;
+  }
+}

@@ -155,6 +155,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.1-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.19.1-x64-mingw-ucrt)
+      racc (~> 1.4)
     nokogiri (1.19.1-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.19.1-x86_64-linux-gnu)
@@ -265,6 +267,7 @@ GEM
     sqlite3 (2.9.0-arm-linux-gnu)
     sqlite3 (2.9.0-arm-linux-musl)
     sqlite3 (2.9.0-arm64-darwin)
+    sqlite3 (2.9.0-x64-mingw-ucrt)
     sqlite3 (2.9.0-x86_64-darwin)
     sqlite3 (2.9.0-x86_64-linux-gnu)
     sqlite3 (2.9.0-x86_64-linux-musl)
@@ -279,6 +282,8 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2025.3)
+      tzinfo (>= 1.0.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
@@ -302,6 +307,7 @@ PLATFORMS
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
+  x64-mingw-ucrt
   x86_64-darwin
   x86_64-linux
   x86_64-linux-gnu
@@ -383,6 +389,7 @@ CHECKSUMS
   nokogiri (1.19.1-arm-linux-gnu) sha256=0a39ed59abe3bf279fab9dd4c6db6fe8af01af0608f6e1f08b8ffa4e5d407fa3
   nokogiri (1.19.1-arm-linux-musl) sha256=3a18e559ee499b064aac6562d98daab3d39ba6cbb4074a1542781b2f556db47d
   nokogiri (1.19.1-arm64-darwin) sha256=dfe2d337e6700eac47290407c289d56bcf85805d128c1b5a6434ddb79731cb9e
+  nokogiri (1.19.1-x64-mingw-ucrt) sha256=110d92ae57694ae7866670d298a5d04cd150fae5a6a7849957d66f171e6aec9b
   nokogiri (1.19.1-x86_64-darwin) sha256=7093896778cc03efb74b85f915a775862730e887f2e58d6921e3fa3d981e68bf
   nokogiri (1.19.1-x86_64-linux-gnu) sha256=1a4902842a186b4f901078e692d12257678e6133858d0566152fe29cdb98456a
   nokogiri (1.19.1-x86_64-linux-musl) sha256=4267f38ad4fc7e52a2e7ee28ed494e8f9d8eb4f4b3320901d55981c7b995fc23
@@ -421,6 +428,7 @@ CHECKSUMS
   sqlite3 (2.9.0-arm-linux-gnu) sha256=a19a21504b0d7c8c825fbbf37b358ae316b6bd0d0134c619874060b2eef05435
   sqlite3 (2.9.0-arm-linux-musl) sha256=fca5b26197c70e3363115d3faaea34d7b2ad9c7f5fa8d8312e31b64e7556ee07
   sqlite3 (2.9.0-arm64-darwin) sha256=a917bd9b84285766ff3300b7d79cd583f5a067594c8c1263e6441618c04a6ed3
+  sqlite3 (2.9.0-x64-mingw-ucrt) sha256=677333ebf8f496f7ffe89bf1e5f8c5331ffe83249228cb262cd896ce8d383da6
   sqlite3 (2.9.0-x86_64-darwin) sha256=59fe51baa3cb33c36d27ce78b4ed9360cd33ccca09498c2ae63850c97c0a6026
   sqlite3 (2.9.0-x86_64-linux-gnu) sha256=72fff9bd750070ba3af695511ba5f0e0a2d8a9206f84869640b3e99dfaf3d5a5
   sqlite3 (2.9.0-x86_64-linux-musl) sha256=ef716ba7a66d7deb1ccc402ac3a6d7343da17fac862793b7f0be3d2917253c90
@@ -431,6 +439,7 @@ CHECKSUMS
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
+  tzinfo-data (1.2025.3) sha256=b546e2f1e5e5c40a0c619aafb24e30d3d6a128c2f689278f721b7286dd499562
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42
   unicode-emoji (4.2.0) sha256=519e69150f75652e40bf736106cfbc8f0f73aa3fb6a65afe62fefa7f80b0f80f
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6

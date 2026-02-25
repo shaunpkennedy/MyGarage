@@ -1,0 +1,173 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Reports</h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
+  </div>
+</div>
+
+<!-- Summary Statistics -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header"><h5 class="mb-0">Summary</h5></div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-box">
+              <div class="stat-value"><%= number_to_currency(@vehicle.fuel_total_cost + @vehicle.service_total_cost) %></div>
+              <div class="stat-label">Total Spent</div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-box">
+              <div class="stat-value"><%= @vehicle.overall_mpg %></div>
+              <div class="stat-label">Average MPG</div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-box">
+              <div class="stat-value"><%= number_to_currency(@vehicle.cost_per_mile) %></div>
+              <div class="stat-label">Cost per Mile</div>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-3">
+            <div class="stat-box">
+              <div class="stat-value"><%= number_to_currency(@vehicle.average_cost_per_gallon) %></div>
+              <div class="stat-label">Avg $/Gallon</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @fuel_logs.any? || @service_logs.any? %>
+  <!-- MPG Over Time + Fuel Price Trend -->
+  <% if @mpg_data.any? %>
+    <div class="row mb-4">
+      <div class="col-md-6 mb-4 mb-md-0">
+        <div class="card shadow-sm h-100">
+          <div class="card-header"><h5 class="mb-0">MPG Over Time</h5></div>
+          <div class="card-body">
+            <div class="chart-container"
+                 data-controller="chart"
+                 data-chart-type-value="line"
+                 data-chart-labels-value="<%= @mpg_labels.to_json %>"
+                 data-chart-datasets-value="<%= [{
+                   label: 'MPG', data: @mpg_data,
+                   borderColor: '#0d6efd',
+                   backgroundColor: 'rgba(13,110,253,0.1)',
+                   fill: true, tension: 0.3
+                 }].to_json %>">
+              <canvas></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header"><h5 class="mb-0">Fuel Price Trend</h5></div>
+          <div class="card-body">
+            <% if @price_data.any? %>
+              <div class="chart-container"
+                   data-controller="chart"
+                   data-chart-type-value="line"
+                   data-chart-labels-value="<%= @price_labels.to_json %>"
+                   data-chart-datasets-value="<%= [{
+                     label: '$/Gallon', data: @price_data,
+                     borderColor: '#dc3545',
+                     backgroundColor: 'rgba(220,53,69,0.1)',
+                     fill: true, tension: 0.3
+                   }].to_json %>">
+                <canvas></canvas>
+              </div>
+            <% else %>
+              <p class="text-muted text-center py-4">No price data recorded yet.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Fuel Spending by Month + Service Spending by Category -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-4 mb-md-0">
+      <div class="card shadow-sm h-100">
+        <div class="card-header"><h5 class="mb-0">Fuel Spending by Month</h5></div>
+        <div class="card-body">
+          <% if @fuel_monthly_data.any? %>
+            <div class="chart-container"
+                 data-controller="chart"
+                 data-chart-type-value="bar"
+                 data-chart-labels-value="<%= @fuel_monthly_labels.to_json %>"
+                 data-chart-datasets-value="<%= [{
+                   label: 'Fuel Cost', data: @fuel_monthly_data,
+                   backgroundColor: '#198754'
+                 }].to_json %>">
+              <canvas></canvas>
+            </div>
+          <% else %>
+            <p class="text-muted text-center py-4">No fuel cost data recorded yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header"><h5 class="mb-0">Service Spending by Category</h5></div>
+        <div class="card-body">
+          <% if @service_category_data.any? %>
+            <div class="chart-container"
+                 data-controller="chart"
+                 data-chart-type-value="doughnut"
+                 data-chart-labels-value="<%= @service_category_labels.to_json %>"
+                 data-chart-datasets-value="<%= [{
+                   data: @service_category_data,
+                   backgroundColor: ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997', '#d63384', '#6c757d', '#adb5bd', '#212529', '#e9ecef', '#ced4da', '#495057']
+                 }].to_json %>">
+              <canvas></canvas>
+            </div>
+          <% else %>
+            <p class="text-muted text-center py-4">No service records yet.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Cost Summary -->
+  <% if @combined_monthly_labels.any? %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header"><h5 class="mb-0">Monthly Cost Summary</h5></div>
+          <div class="card-body">
+            <div class="chart-container"
+                 data-controller="chart"
+                 data-chart-type-value="bar"
+                 data-chart-labels-value="<%= @combined_monthly_labels.to_json %>"
+                 data-chart-datasets-value="<%= [
+                   { label: 'Fuel', data: @combined_fuel_data, backgroundColor: '#198754' },
+                   { label: 'Service', data: @combined_service_data, backgroundColor: '#0d6efd' }
+                 ].to_json %>">
+              <canvas></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="text-center py-5">
+    <p class="text-muted">No fuel or service data recorded yet. Add some fill-ups or service records to see reports.</p>
+    <div class="d-flex justify-content-center gap-2">
+      <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
+      <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
+    </div>
+  </div>
+<% end %>

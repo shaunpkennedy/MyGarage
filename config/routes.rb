@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         patch :complete
       end
     end
+    resource :report, only: [:show]
   end
 
   # Health check
