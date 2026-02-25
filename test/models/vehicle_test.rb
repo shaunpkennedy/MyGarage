@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: vehicles
+#
+#  id                      :integer          not null, primary key
+#  current_odometer        :integer
+#  make                    :string
+#  model                   :string
+#  oil_change_frequency    :integer
+#  tire_rotation_frequency :integer
+#  title                   :string
+#  year                    :integer
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  user_id                 :integer          not null
+#
+# Indexes
+#
+#  index_vehicles_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  user_id  (user_id => users.id)
+#
 require "test_helper"
 
 class VehicleTest < ActiveSupport::TestCase

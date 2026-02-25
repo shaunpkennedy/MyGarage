@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_19_032455) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_25_054524) do
   create_table "fuel_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "gallons", precision: 6, scale: 3
@@ -37,6 +37,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_19_032455) do
     t.integer "miles"
     t.integer "next_odometer"
     t.text "notes"
+    t.boolean "recurring", default: false
     t.integer "reminder_type_id", null: false
     t.integer "service_type_id", null: false
     t.integer "time"

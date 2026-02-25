@@ -27,7 +27,12 @@
         <tbody>
           <% @active_reminders.each do |reminder| %>
             <tr class="<%= 'table-danger' if reminder.overdue? %>">
-              <td><%= reminder.service_type.name %></td>
+              <td>
+                <%= reminder.service_type.name %>
+                <% if reminder.recurring? %>
+                  <span class="badge bg-info ms-1">Recurring</span>
+                <% end %>
+              </td>
               <td><%= reminder.reminder_type&.name %></td>
               <td><%= reminder.next_odometer ? number_with_delimiter(reminder.next_odometer) : '—' %></td>
               <td>

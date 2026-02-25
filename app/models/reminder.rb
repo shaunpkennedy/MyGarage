@@ -9,6 +9,7 @@
 #  miles            :integer
 #  next_odometer    :integer
 #  notes            :text
+#  recurring        :boolean          default(FALSE)
 #  time             :integer
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
@@ -50,5 +51,21 @@ class Reminder < ApplicationRecord
 
   def complete!
     update!(completed_at: Time.current)
+    create_next_reminder if recurring? && miles.present?
+  end
+
+  private
+
+  def create_next_reminder
+    Reminder.create!(
+      vehicle: vehicle,
+      service_type: service_type,
+      reminder_type: reminder_type,
+      miles: miles,
+      time: time,
+      next_odometer: next_odometer.to_i + miles,
+      notes: notes,
+      recurring: true
+    )
   end
 end

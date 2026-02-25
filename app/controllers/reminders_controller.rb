@@ -46,7 +46,9 @@ class RemindersController < ApplicationController
 
   def complete
     @reminder.complete!
-    flash[:notice] = "#{@reminder.service_type.name} marked as completed."
+    message = "#{@reminder.service_type.name} marked as completed."
+    message += " A new recurring reminder has been created." if @reminder.recurring? && @reminder.miles.present?
+    flash[:notice] = message
     redirect_to vehicle_path(@vehicle)
   end
 
@@ -63,7 +65,7 @@ class RemindersController < ApplicationController
   def reminder_params
     params.require(:reminder).permit(
       :service_type_id, :reminder_type_id, :miles, :time,
-      :next_odometer, :notes
+      :next_odometer, :notes, :recurring
     )
   end
 end

@@ -1,3 +1,32 @@
+# == Schema Information
+#
+# Table name: reminders
+#
+#  id               :integer          not null, primary key
+#  completed_at     :datetime
+#  miles            :integer
+#  next_odometer    :integer
+#  notes            :text
+#  recurring        :boolean          default(FALSE)
+#  time             :integer
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  reminder_type_id :integer          not null
+#  service_type_id  :integer          not null
+#  vehicle_id       :integer          not null
+#
+# Indexes
+#
+#  index_reminders_on_reminder_type_id  (reminder_type_id)
+#  index_reminders_on_service_type_id   (service_type_id)
+#  index_reminders_on_vehicle_id        (vehicle_id)
+#
+# Foreign Keys
+#
+#  reminder_type_id  (reminder_type_id => reminder_types.id)
+#  service_type_id   (service_type_id => service_types.id)
+#  vehicle_id        (vehicle_id => vehicles.id)
+#
 oil_reminder:
   vehicle: civic
   service_type: oil_change
@@ -11,3 +40,11 @@ overdue_reminder:
   reminder_type: by_mileage
   miles: 7500
   next_odometer: 49000
+
+recurring_reminder:
+  vehicle: civic
+  service_type: oil_change
+  reminder_type: by_mileage
+  miles: 5000
+  next_odometer: 55000
+  recurring: true

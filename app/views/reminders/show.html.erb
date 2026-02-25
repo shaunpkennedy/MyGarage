@@ -45,6 +45,15 @@
           <dt class="col-sm-4">Notes</dt>
           <dd class="col-sm-8"><%= @reminder.notes.presence || '—' %></dd>
 
+          <dt class="col-sm-4">Recurring</dt>
+          <dd class="col-sm-8">
+            <% if @reminder.recurring? %>
+              <span class="badge bg-info">Yes — will auto-create next reminder</span>
+            <% else %>
+              No
+            <% end %>
+          </dd>
+
           <dt class="col-sm-4">Status</dt>
           <dd class="col-sm-8">
             <% if @reminder.completed_at %>

@@ -1,0 +1,163 @@
+<h2 class="mb-4">Dashboard</h2>
+
+<%# Summary Cards %>
+<div class="row mb-4">
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <div class="fs-3 fw-bold"><%= @vehicles.size %></div>
+        <div class="text-muted">Total Vehicles</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <div class="fs-3 fw-bold"><%= number_to_currency(@total_spent) %></div>
+        <div class="text-muted">Total Spent</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <div class="fs-3 fw-bold text-<%= @overdue_reminders.any? ? 'danger' : 'success' %>"><%= @overdue_reminders.size %></div>
+        <div class="text-muted">Overdue Reminders</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card shadow-sm text-center">
+      <div class="card-body">
+        <% total_miles = @vehicles.sum(&:miles_logged)
+           total_gallons = @vehicles.sum { |v| v.fuel_logs.sum(:gallons) }
+           avg_mpg = total_gallons.positive? ? (total_miles.to_f / total_gallons).round(1) : 0 %>
+        <div class="fs-3 fw-bold"><%= avg_mpg %></div>
+        <div class="text-muted">Avg MPG</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# Alerts Section %>
+<% if @overdue_reminders.any? || @approaching_reminders.any? %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning bg-opacity-10">
+      <h5 class="mb-0">Alerts</h5>
+    </div>
+    <div class="card-body">
+      <% @overdue_reminders.each do |reminder| %>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <span class="badge bg-danger me-2">Overdue</span>
+            <strong><%= reminder.service_type.name %></strong>
+            <span class="text-muted">— <%= link_to reminder.vehicle.display_name, vehicle_path(reminder.vehicle) %></span>
+          </div>
+          <span class="text-danger fw-bold"><%= number_with_delimiter(reminder.miles_remaining.abs) %> mi past due</span>
+        </div>
+      <% end %>
+      <% @approaching_reminders.each do |reminder| %>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <span class="badge bg-warning text-dark me-2">Approaching</span>
+            <strong><%= reminder.service_type.name %></strong>
+            <span class="text-muted">— <%= link_to reminder.vehicle.display_name, vehicle_path(reminder.vehicle) %></span>
+          </div>
+          <span class="text-warning fw-bold"><%= number_with_delimiter(reminder.miles_remaining) %> mi remaining</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%# Recent Activity %>
+<% if @recent_activity.any? %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Recent Activity</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Vehicle</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th class="text-end">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_activity.each do |entry| %>
+            <tr>
+              <td><%= entry.log_date&.strftime('%b %d, %Y') %></td>
+              <td><%= link_to entry.vehicle.display_name, vehicle_path(entry.vehicle) %></td>
+              <% if entry.is_a?(FuelLog) %>
+                <td><span class="badge bg-primary">Fuel</span></td>
+                <td><%= number_with_delimiter(entry.odometer) %> mi — <%= entry.gallons %> gal</td>
+              <% else %>
+                <td><span class="badge bg-secondary">Service</span></td>
+                <td><%= entry.service_type.name %></td>
+              <% end %>
+              <td class="text-end"><%= number_to_currency(entry.total_cost) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
+
+<%# Vehicle Cards %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">My Vehicles</h5>
+  <%= link_to 'Add Vehicle', new_vehicle_path, class: 'btn btn-primary btn-sm' %>
+</div>
+
+<% if @vehicles.any? %>
+  <div class="row">
+    <% @vehicles.each do |vehicle| %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm vehicle-card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <%= link_to vehicle.title, vehicle, class: 'text-decoration-none stretched-link' %>
+            </h5>
+            <p class="text-muted mb-3"><%= vehicle.display_name %></p>
+
+            <div class="row text-center g-2">
+              <div class="col-6">
+                <div class="stat-box">
+                  <div class="stat-value"><%= vehicle.overall_mpg %></div>
+                  <div class="stat-label">Avg MPG</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-box">
+                  <div class="stat-value"><%= number_to_currency(vehicle.cost_per_mile) %></div>
+                  <div class="stat-label">Cost/Mile</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-box">
+                  <div class="stat-value"><%= number_with_delimiter(vehicle.current_odometer || 0) %></div>
+                  <div class="stat-label">Odometer</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="stat-box">
+                  <div class="stat-value"><%= number_to_currency(vehicle.fuel_total_cost) %></div>
+                  <div class="stat-label">Fuel Spent</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-4">
+    <p class="text-muted">No vehicles yet. Add your first vehicle to start tracking.</p>
+  </div>
+<% end %>
