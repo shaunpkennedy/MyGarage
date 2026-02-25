@@ -7,6 +7,19 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <script>
+      (function() {
+        var pref = localStorage.getItem("theme") || "system";
+        var theme;
+        if (pref === "system") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        } else {
+          theme = pref;
+        }
+        document.documentElement.setAttribute("data-bs-theme", theme);
+      })();
+    </script>
+
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
@@ -18,7 +31,7 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
       <div class="container">
         <%= link_to 'My Garage', root_path, class: 'navbar-brand fw-bold' %>
 
@@ -36,6 +49,17 @@
 
             <div class="d-flex align-items-center gap-2">
               <%= link_to 'Add Vehicle', new_vehicle_path, class: 'btn btn-sm btn-outline-light' %>
+
+              <div class="dropdown" data-controller="theme">
+                <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme">
+                  <i class="bi bi-circle-half" data-theme-target="icon"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="light"><i class="bi bi-sun-fill me-2"></i>Light</button></li>
+                  <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="dark"><i class="bi bi-moon-fill me-2"></i>Dark</button></li>
+                  <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="system"><i class="bi bi-circle-half me-2"></i>System</button></li>
+                </ul>
+              </div>
 
               <div class="dropdown">
                 <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -57,6 +81,17 @@
                 <%= link_to 'Sign Up', signup_path, class: 'nav-link' %>
               </li>
             </ul>
+
+            <div class="dropdown ms-2" data-controller="theme">
+              <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Toggle theme">
+                <i class="bi bi-circle-half" data-theme-target="icon"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="light"><i class="bi bi-sun-fill me-2"></i>Light</button></li>
+                <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="dark"><i class="bi bi-moon-fill me-2"></i>Dark</button></li>
+                <li><button class="dropdown-item" type="button" data-action="theme#select" data-theme-value="system"><i class="bi bi-circle-half me-2"></i>System</button></li>
+              </ul>
+            </div>
           <% end %>
         </div>
       </div>
@@ -82,9 +117,9 @@
       <%= yield %>
     </main>
 
-    <footer class="bg-dark text-light py-3 mt-auto">
+    <footer class="bg-body-tertiary py-3 mt-auto">
       <div class="container text-center">
-        <small>My Garage &copy; <%= Date.current.year %></small>
+        <small class="text-body-secondary">My Garage &copy; <%= Date.current.year %></small>
       </div>
     </footer>
   </body>
