@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Cost Summary</h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <%= link_to 'Reports', vehicle_report_path(@vehicle), class: 'btn btn-outline-secondary me-2' %>
+    <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
+  </div>
+</div>
+
+<!-- View Toggle -->
+<div class="mb-4">
+  <div class="btn-group" role="group">
+    <%= link_to 'Monthly', vehicle_cost_summary_path(@vehicle),
+        class: "btn #{@view == :monthly ? 'btn-primary' : 'btn-outline-primary'}" %>
+    <%= link_to 'Yearly', vehicle_cost_summary_path(@vehicle, view: :yearly),
+        class: "btn #{@view == :yearly ? 'btn-primary' : 'btn-outline-primary'}" %>
+  </div>
+</div>
+
+<% if @periods.any? %>
+  <!-- Summary Boxes -->
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Total Fuel</h6>
+          <h3 class="fw-bold text-success"><%= number_to_currency(@grand_totals[:fuel_cost]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Total Service</h6>
+          <h3 class="fw-bold text-primary"><%= number_to_currency(@grand_totals[:service_cost]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm text-center">
+        <div class="card-body">
+          <h6 class="text-muted">Grand Total</h6>
+          <h3 class="fw-bold"><%= number_to_currency(@grand_totals[:total]) %></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Table -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th class="text-end">Fuel Cost</th>
+            <th class="text-end">Service Cost</th>
+            <th class="text-end">Total</th>
+            <th class="text-end">Fill-ups</th>
+            <th class="text-end">Services</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @periods.each do |row| %>
+            <tr>
+              <td><%= row[:period] %></td>
+              <td class="text-end"><%= number_to_currency(row[:fuel_cost]) %></td>
+              <td class="text-end"><%= number_to_currency(row[:service_cost]) %></td>
+              <td class="text-end fw-bold"><%= number_to_currency(row[:total]) %></td>
+              <td class="text-end"><%= row[:fill_ups] %></td>
+              <td class="text-end"><%= row[:services] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr class="table-dark fw-bold">
+            <td>Grand Total</td>
+            <td class="text-end"><%= number_to_currency(@grand_totals[:fuel_cost]) %></td>
+            <td class="text-end"><%= number_to_currency(@grand_totals[:service_cost]) %></td>
+            <td class="text-end"><%= number_to_currency(@grand_totals[:total]) %></td>
+            <td class="text-end"><%= @grand_totals[:fill_ups] %></td>
+            <td class="text-end"><%= @grand_totals[:services] %></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <p class="text-muted">No fuel or service data recorded yet. Add some fill-ups or service records to see cost summaries.</p>
+    <div class="d-flex justify-content-center gap-2">
+      <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
+      <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
+    </div>
+  </div>
+<% end %>

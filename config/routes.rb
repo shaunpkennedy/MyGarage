@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       end
     end
     resource :report, only: [:show]
+    resource :cost_summary, only: [:show]
   end
 
   # Health check
