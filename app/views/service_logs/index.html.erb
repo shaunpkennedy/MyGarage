@@ -3,8 +3,9 @@
     <h2>Service History — <%= @vehicle.title %></h2>
     <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
   </div>
-  <div>
-    <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info me-2' %>
+  <div class="d-flex gap-2">
+    <%= link_to 'Add Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
+    <%= link_to 'Export CSV', export_vehicle_service_logs_path(@vehicle), class: 'btn btn-outline-primary' %>
     <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
   </div>
 </div>
@@ -47,3 +48,17 @@
     <%= link_to 'Record First Service', new_vehicle_service_log_path(@vehicle), class: 'btn btn-info' %>
   </div>
 <% end %>
+
+<!-- Import CSV -->
+<div class="card shadow-sm mt-4">
+  <div class="card-header"><h6 class="mb-0">Import Service Logs from CSV</h6></div>
+  <div class="card-body">
+    <%= form_with url: import_vehicle_service_logs_path(@vehicle), method: :post, multipart: true, local: true, class: 'd-flex align-items-end gap-3' do |f| %>
+      <div class="flex-grow-1">
+        <%= f.file_field :file, accept: '.csv', class: 'form-control' %>
+      </div>
+      <%= f.submit 'Import', class: 'btn btn-primary' %>
+    <% end %>
+    <small class="text-muted mt-2 d-block">CSV columns: date, odometer, service_type, total_cost, notes</small>
+  </div>
+</div>

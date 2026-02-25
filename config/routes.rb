@@ -13,8 +13,18 @@ Rails.application.routes.draw do
 
   # Vehicles with nested resources
   resources :vehicles do
-    resources :fuel_logs
-    resources :service_logs
+    resources :fuel_logs do
+      collection do
+        get :export
+        post :import
+      end
+    end
+    resources :service_logs do
+      collection do
+        get :export
+        post :import
+      end
+    end
     resources :reminders do
       member do
         patch :complete

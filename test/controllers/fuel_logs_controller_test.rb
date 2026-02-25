@@ -37,4 +37,29 @@ class FuelLogsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to vehicle_fuel_logs_path(@vehicle)
   end
+
+  test "export fuel logs as csv" do
+    get export_vehicle_fuel_logs_path(@vehicle)
+    assert_response :success
+    assert_equal "text/csv", response.content_type
+    assert_includes response.body, "date,odometer,gallons"
+  end
+
+  test "import fuel logs from csv" do
+    csv_content = "date,odometer,gallons,price_per_gallon,total_cost\n2025-03-01,52000,11.5,3.45,39.68\n"
+    file = Rack::Test::UploadedFile.new(
+      StringIO.new(csv_content), "text/csv", original_filename: "fuel.csv"
+    )
+
+    assert_difference("FuelLog.count", 1) do
+      post import_vehicle_fuel_logs_path(@vehicle), params: { file: file }
+    end
+    assert_redirected_to vehicle_fuel_logs_path(@vehicle)
+  end
+
+  test "import without file shows error" do
+    post import_vehicle_fuel_logs_path(@vehicle)
+    assert_redirected_to vehicle_fuel_logs_path(@vehicle)
+    assert_equal "Please select a CSV file.", flash[:alert]
+  end
 end

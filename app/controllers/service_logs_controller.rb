@@ -46,6 +46,66 @@ class ServiceLogsController < ApplicationController
     redirect_to vehicle_service_logs_path(@vehicle)
   end
 
+  def export
+    service_logs = @vehicle.service_logs.includes(:service_type).order(:log_date)
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << %w[date odometer service_type total_cost notes]
+      service_logs.each do |log|
+        csv << [
+          log.log_date&.strftime("%Y-%m-%d"),
+          log.odometer,
+          log.service_type.name,
+          log.total_cost,
+          log.notes
+        ]
+      end
+    end
+
+    send_data csv_data,
+      filename: "#{@vehicle.title.parameterize}-service-logs.csv",
+      type: "text/csv"
+  end
+
+  def import
+    file = params[:file]
+
+    if file.blank?
+      flash[:alert] = "Please select a CSV file."
+      redirect_to vehicle_service_logs_path(@vehicle) and return
+    end
+
+    imported = 0
+    skipped = 0
+
+    CSV.foreach(file.path, headers: true, header_converters: :symbol) do |row|
+      service_type = ServiceType.where("LOWER(name) = ?", row[:service_type].to_s.strip.downcase).first
+
+      unless service_type
+        skipped += 1
+        next
+      end
+
+      service_log = @vehicle.service_logs.build(
+        log_date: row[:date],
+        odometer: row[:odometer],
+        service_type: service_type,
+        total_cost: row[:total_cost],
+        notes: row[:notes]
+      )
+
+      if service_log.save
+        imported += 1
+      else
+        skipped += 1
+      end
+    end
+
+    flash[:notice] = "Imported #{imported} service record#{'s' unless imported == 1}."
+    flash[:alert] = "Skipped #{skipped} invalid row#{'s' unless skipped == 1}." if skipped > 0
+    redirect_to vehicle_service_logs_path(@vehicle)
+  end
+
   private
 
   def set_vehicle

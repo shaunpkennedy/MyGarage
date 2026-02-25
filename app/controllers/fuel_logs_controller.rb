@@ -48,6 +48,61 @@ class FuelLogsController < ApplicationController
     redirect_to vehicle_fuel_logs_path(@vehicle)
   end
 
+  def export
+    fuel_logs = @vehicle.fuel_logs.order(:log_date)
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << %w[date odometer gallons price_per_gallon total_cost miles mpg]
+      fuel_logs.each do |log|
+        csv << [
+          log.log_date&.strftime("%Y-%m-%d"),
+          log.odometer,
+          log.gallons,
+          log.price_per_gallon,
+          log.total_cost,
+          log.miles,
+          log.mpg
+        ]
+      end
+    end
+
+    send_data csv_data,
+      filename: "#{@vehicle.title.parameterize}-fuel-logs.csv",
+      type: "text/csv"
+  end
+
+  def import
+    file = params[:file]
+
+    if file.blank?
+      flash[:alert] = "Please select a CSV file."
+      redirect_to vehicle_fuel_logs_path(@vehicle) and return
+    end
+
+    imported = 0
+    skipped = 0
+
+    CSV.foreach(file.path, headers: true, header_converters: :symbol) do |row|
+      fuel_log = @vehicle.fuel_logs.build(
+        log_date: row[:date],
+        odometer: row[:odometer],
+        gallons: row[:gallons],
+        price_per_gallon: row[:price_per_gallon],
+        total_cost: row[:total_cost]
+      )
+
+      if fuel_log.save
+        imported += 1
+      else
+        skipped += 1
+      end
+    end
+
+    flash[:notice] = "Imported #{imported} fill-up#{'s' unless imported == 1}."
+    flash[:alert] = "Skipped #{skipped} invalid row#{'s' unless skipped == 1}." if skipped > 0
+    redirect_to vehicle_fuel_logs_path(@vehicle)
+  end
+
   private
 
   def set_vehicle

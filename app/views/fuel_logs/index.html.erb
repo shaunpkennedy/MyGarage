@@ -3,8 +3,9 @@
     <h2>Fuel Log — <%= @vehicle.title %></h2>
     <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
   </div>
-  <div>
-    <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success me-2' %>
+  <div class="d-flex gap-2">
+    <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
+    <%= link_to 'Export CSV', export_vehicle_fuel_logs_path(@vehicle), class: 'btn btn-outline-primary' %>
     <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
   </div>
 </div>
@@ -71,3 +72,17 @@
     <%= link_to 'Record First Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
   </div>
 <% end %>
+
+<!-- Import CSV -->
+<div class="card shadow-sm mt-4">
+  <div class="card-header"><h6 class="mb-0">Import Fuel Logs from CSV</h6></div>
+  <div class="card-body">
+    <%= form_with url: import_vehicle_fuel_logs_path(@vehicle), method: :post, multipart: true, local: true, class: 'd-flex align-items-end gap-3' do |f| %>
+      <div class="flex-grow-1">
+        <%= f.file_field :file, accept: '.csv', class: 'form-control' %>
+      </div>
+      <%= f.submit 'Import', class: 'btn btn-primary' %>
+    <% end %>
+    <small class="text-muted mt-2 d-block">CSV columns: date, odometer, gallons, price_per_gallon, total_cost</small>
+  </div>
+</div>
