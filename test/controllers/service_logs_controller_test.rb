@@ -12,6 +12,21 @@ class ServiceLogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "index with date filter" do
+    get vehicle_service_logs_path(@vehicle), params: { from: "2025-01-01", to: "2025-02-01" }
+    assert_response :success
+  end
+
+  test "index with service type filter" do
+    get vehicle_service_logs_path(@vehicle), params: { service_type_id: service_types(:oil_change).id }
+    assert_response :success
+  end
+
+  test "index with cost filter" do
+    get vehicle_service_logs_path(@vehicle), params: { cost_min: "10", cost_max: "100" }
+    assert_response :success
+  end
+
   test "export service logs as csv" do
     get export_vehicle_service_logs_path(@vehicle)
     assert_response :success

@@ -21,6 +21,14 @@
         <%= f.label :to, 'To', class: 'form-label mb-0 small' %>
         <%= f.date_field :to, value: params[:to], class: 'form-control form-control-sm' %>
       </div>
+      <div>
+        <%= f.label :cost_min, 'Min Cost', class: 'form-label mb-0 small' %>
+        <%= f.number_field :cost_min, value: params[:cost_min], class: 'form-control form-control-sm', min: 0, step: 0.01, placeholder: '$' %>
+      </div>
+      <div>
+        <%= f.label :cost_max, 'Max Cost', class: 'form-label mb-0 small' %>
+        <%= f.number_field :cost_max, value: params[:cost_max], class: 'form-control form-control-sm', min: 0, step: 0.01, placeholder: '$' %>
+      </div>
       <div class="d-flex gap-2">
         <%= f.submit 'Filter', class: 'btn btn-sm btn-primary' %>
         <%= link_to 'Clear', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-sm btn-outline-secondary' %>

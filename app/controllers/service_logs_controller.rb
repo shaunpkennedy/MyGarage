@@ -5,6 +5,11 @@ class ServiceLogsController < ApplicationController
 
   def index
     @service_logs = @vehicle.service_logs.includes(:service_type).order(log_date: :desc)
+    @service_logs = @service_logs.where("log_date >= ?", params[:from]) if params[:from].present?
+    @service_logs = @service_logs.where("log_date <= ?", params[:to]) if params[:to].present?
+    @service_logs = @service_logs.where(service_type_id: params[:service_type_id]) if params[:service_type_id].present?
+    @service_logs = @service_logs.where("total_cost >= ?", params[:cost_min]) if params[:cost_min].present?
+    @service_logs = @service_logs.where("total_cost <= ?", params[:cost_max]) if params[:cost_max].present?
   end
 
   def show

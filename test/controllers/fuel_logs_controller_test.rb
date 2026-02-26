@@ -17,6 +17,11 @@ class FuelLogsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "index with cost filter" do
+    get vehicle_fuel_logs_path(@vehicle), params: { cost_min: "30", cost_max: "40" }
+    assert_response :success
+  end
+
   test "new fuel log form" do
     get new_vehicle_fuel_log_path(@vehicle)
     assert_response :success

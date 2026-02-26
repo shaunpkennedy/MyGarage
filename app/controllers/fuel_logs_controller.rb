@@ -7,6 +7,8 @@ class FuelLogsController < ApplicationController
     @fuel_logs = @vehicle.fuel_logs.order(log_date: :desc)
     @fuel_logs = @fuel_logs.where("log_date >= ?", params[:from]) if params[:from].present?
     @fuel_logs = @fuel_logs.where("log_date <= ?", params[:to]) if params[:to].present?
+    @fuel_logs = @fuel_logs.where("total_cost >= ?", params[:cost_min]) if params[:cost_min].present?
+    @fuel_logs = @fuel_logs.where("total_cost <= ?", params[:cost_max]) if params[:cost_max].present?
   end
 
   def show
