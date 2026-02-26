@@ -1,0 +1,187 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Fuel Price Trends</h2>
+    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+  </div>
+  <div>
+    <%= link_to 'Reports', vehicle_report_path(@vehicle), class: 'btn btn-outline-secondary me-2' %>
+    <%= link_to 'Back to Vehicle', @vehicle, class: 'btn btn-outline-secondary' %>
+  </div>
+</div>
+
+<% if @stats %>
+  <!-- Price Stats -->
+  <div class="row mb-4">
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Latest $/Gal</h6>
+          <h3 class="fw-bold"><%= number_to_currency(@stats[:latest]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Avg $/Gal</h6>
+          <h3 class="fw-bold"><%= number_to_currency(@stats[:avg]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Lowest</h6>
+          <h3 class="fw-bold text-success"><%= number_to_currency(@stats[:min]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Highest</h6>
+          <h3 class="fw-bold text-danger"><%= number_to_currency(@stats[:max]) %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Total Gallons</h6>
+          <h3 class="fw-bold"><%= @stats[:total_gallons] %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6 mb-3">
+      <div class="card shadow-sm text-center h-100">
+        <div class="card-body">
+          <h6 class="text-muted">Total Fuel Cost</h6>
+          <h3 class="fw-bold"><%= number_to_currency(@stats[:total_spent]) %></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Price Trend Chart -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><h5 class="mb-0">Price per Gallon Over Time</h5></div>
+    <div class="card-body">
+      <%
+        datasets = [{
+          label: 'Your Avg $/Gal',
+          data: @months.map { |m| m[:avg_price] },
+          borderColor: '#0d6efd',
+          backgroundColor: 'rgba(13,110,253,0.1)',
+          fill: true,
+          tension: 0.3
+        }]
+
+        if @national_averages.any?
+          national_by_month = @national_averages.index_by { |n| n[:month] }
+          national_data = @months.map { |m| national_by_month.dig(m[:month], :price) }
+          datasets << {
+            label: 'National Avg',
+            data: national_data,
+            borderColor: '#6c757d',
+            backgroundColor: 'rgba(108,117,125,0.05)',
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0.3
+          }
+        end
+      %>
+      <div class="chart-container"
+           data-controller="chart"
+           data-chart-type-value="line"
+           data-chart-labels-value="<%= @months.map { |m| m[:label] }.to_json %>"
+           data-chart-datasets-value="<%= datasets.to_json %>"
+           data-chart-options-value="<%= { scales: { y: { beginAtZero: false } } }.to_json %>">
+        <canvas></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Spending Chart -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><h5 class="mb-0">Monthly Fuel Spending</h5></div>
+    <div class="card-body">
+      <div class="chart-container"
+           data-controller="chart"
+           data-chart-type-value="bar"
+           data-chart-labels-value="<%= @months.map { |m| m[:label] }.to_json %>"
+           data-chart-datasets-value="<%= [{
+             label: 'Fuel Cost',
+             data: @months.map { |m| m[:total_cost] },
+             backgroundColor: 'rgba(13,110,253,0.6)',
+             borderColor: '#0d6efd',
+             borderWidth: 1
+           }].to_json %>">
+        <canvas></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Detail Table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><h5 class="mb-0">Monthly Breakdown</h5></div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th class="text-end">Avg $/Gal</th>
+            <th class="text-end">Min</th>
+            <th class="text-end">Max</th>
+            <% if @national_averages.any? %>
+              <th class="text-end">National Avg</th>
+              <th class="text-end">Diff</th>
+            <% end %>
+            <th class="text-end">Fill-Ups</th>
+            <th class="text-end">Gallons</th>
+            <th class="text-end">Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% national_by_month = @national_averages.index_by { |n| n[:month] } %>
+          <% @months.each do |m| %>
+            <% national = national_by_month[m[:month]] %>
+            <tr>
+              <td><%= m[:label] %></td>
+              <td class="text-end"><%= number_to_currency(m[:avg_price]) %></td>
+              <td class="text-end"><%= number_to_currency(m[:min_price]) %></td>
+              <td class="text-end"><%= number_to_currency(m[:max_price]) %></td>
+              <% if @national_averages.any? %>
+                <td class="text-end"><%= national ? number_to_currency(national[:price]) : '—' %></td>
+                <td class="text-end">
+                  <% if national %>
+                    <% diff = (m[:avg_price] - national[:price]).round(3) %>
+                    <span class="<%= diff > 0 ? 'text-danger' : 'text-success' %>">
+                      <%= diff > 0 ? '+' : '' %><%= number_to_currency(diff) %>
+                    </span>
+                  <% else %>
+                    —
+                  <% end %>
+                </td>
+              <% end %>
+              <td class="text-end"><%= m[:fill_ups] %></td>
+              <td class="text-end"><%= m[:total_gallons] %></td>
+              <td class="text-end"><%= number_to_currency(m[:total_cost]) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <% if @national_averages.empty? %>
+    <div class="alert alert-info">
+      <strong>Tip:</strong> Set the <code>EIA_API_KEY</code> environment variable to compare your prices against national averages.
+      Get a free API key at <a href="https://www.eia.gov/opendata/register.php" target="_blank" class="alert-link">eia.gov</a>.
+    </div>
+  <% end %>
+<% else %>
+  <div class="text-center py-5">
+    <p class="text-muted">No fuel logs with price data yet. Add fill-ups with price per gallon to see trends.</p>
+    <%= link_to 'Add Fill-Up', new_vehicle_fuel_log_path(@vehicle), class: 'btn btn-success' %>
+  </div>
+<% end %>
