@@ -10,24 +10,35 @@
   <% end %>
 
   <div class="row">
+    <div class="col-md-8 mb-3">
+      <%= f.label :vin, 'VIN', class: 'form-label' %>
+      <div class="input-group">
+        <%= f.text_field :vin, class: 'form-control', placeholder: 'e.g. 1HGBH41JXMN109186', maxlength: 17, id: 'vehicle_vin' %>
+        <button type="button" class="btn btn-outline-primary" id="vin-lookup-btn">Lookup VIN</button>
+      </div>
+      <div id="vin-lookup-status" class="form-text"></div>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-md-6 mb-3">
       <%= f.label :title, 'Nickname', class: 'form-label' %>
       <%= f.text_field :title, class: 'form-control', placeholder: 'e.g. Daily Driver', required: true %>
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :year, class: 'form-label' %>
-      <%= f.number_field :year, class: 'form-control', min: 1900, max: Date.current.year + 2 %>
+      <%= f.number_field :year, class: 'form-control', min: 1900, max: Date.current.year + 2, id: 'vehicle_year' %>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-6 mb-3">
       <%= f.label :make, class: 'form-label' %>
-      <%= f.text_field :make, class: 'form-control', placeholder: 'e.g. Toyota' %>
+      <%= f.text_field :make, class: 'form-control', placeholder: 'e.g. Toyota', id: 'vehicle_make' %>
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :model, class: 'form-label' %>
-      <%= f.text_field :model, class: 'form-control', placeholder: 'e.g. Camry' %>
+      <%= f.text_field :model, class: 'form-control', placeholder: 'e.g. Camry', id: 'vehicle_model' %>
     </div>
   </div>
 
@@ -51,3 +62,49 @@
     <%= link_to 'Cancel', vehicles_path, class: 'btn btn-outline-secondary' %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var btn = document.getElementById("vin-lookup-btn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function() {
+      var vin = document.getElementById("vehicle_vin").value.trim();
+      var status = document.getElementById("vin-lookup-status");
+
+      if (vin.length !== 17) {
+        status.textContent = "VIN must be exactly 17 characters.";
+        status.className = "form-text text-danger";
+        return;
+      }
+
+      btn.disabled = true;
+      status.textContent = "Looking up VIN...";
+      status.className = "form-text text-muted";
+
+      fetch("<%= vin_lookup_path %>" + "?vin=" + encodeURIComponent(vin), {
+        headers: { "Accept": "application/json" }
+      })
+      .then(function(response) { return response.json().then(function(data) { return { ok: response.ok, data: data }; }); })
+      .then(function(result) {
+        if (result.ok) {
+          if (result.data.make) document.getElementById("vehicle_make").value = result.data.make;
+          if (result.data.model) document.getElementById("vehicle_model").value = result.data.model;
+          if (result.data.year) document.getElementById("vehicle_year").value = result.data.year;
+          status.textContent = "Found: " + [result.data.year, result.data.make, result.data.model].filter(Boolean).join(" ");
+          status.className = "form-text text-success";
+        } else {
+          status.textContent = result.data.error || "Could not decode VIN.";
+          status.className = "form-text text-danger";
+        }
+      })
+      .catch(function() {
+        status.textContent = "Network error. Please try again.";
+        status.className = "form-text text-danger";
+      })
+      .finally(function() {
+        btn.disabled = false;
+      });
+    });
+  });
+</script>

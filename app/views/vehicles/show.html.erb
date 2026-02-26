@@ -6,7 +6,12 @@
         <span class="badge bg-danger ms-2"><%= @overdue_reminders.size %> overdue</span>
       <% end %>
     </h2>
-    <p class="text-muted mb-0"><%= @vehicle.display_name %></p>
+    <p class="text-muted mb-0">
+      <%= @vehicle.display_name %>
+      <% if @vehicle.vin.present? %>
+        <span class="ms-2 small">VIN: <%= @vehicle.vin %></span>
+      <% end %>
+    </p>
   </div>
   <div>
     <%= link_to 'Edit', edit_vehicle_path(@vehicle), class: 'btn btn-outline-secondary btn-sm me-2' %>
@@ -177,6 +182,7 @@
       <%= link_to 'Budgets', vehicle_budgets_path(@vehicle), class: 'btn btn-outline-success' %>
       <%= link_to 'Reports', vehicle_report_path(@vehicle), class: 'btn btn-primary' %>
       <%= link_to 'Cost Summary', vehicle_cost_summary_path(@vehicle), class: 'btn btn-outline-primary' %>
+      <%= link_to 'Fuel Trends', vehicle_fuel_trend_path(@vehicle), class: 'btn btn-outline-info' %>
       <%= link_to 'Vehicle History', vehicle_history_path(@vehicle), class: 'btn btn-outline-dark' %>
       <%= link_to 'Fuel History', vehicle_fuel_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>
       <%= link_to 'Service History', vehicle_service_logs_path(@vehicle), class: 'btn btn-outline-secondary' %>

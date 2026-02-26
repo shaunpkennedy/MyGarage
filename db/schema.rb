@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_25_055806) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_26_033106) do
   create_table "budgets", force: :cascade do |t|
     t.decimal "amount", precision: 8, scale: 2, null: false
     t.string "category", null: false
@@ -97,6 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_25_055806) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.string "vin"
     t.integer "year"
     t.index ["user_id"], name: "index_vehicles_on_user_id"
   end

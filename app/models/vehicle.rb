@@ -11,6 +11,7 @@
 #  oil_change_frequency    :integer
 #  tire_rotation_frequency :integer
 #  title                   :string
+#  vin                     :string
 #  year                    :integer
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null

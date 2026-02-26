@@ -11,6 +11,9 @@ Rails.application.routes.draw do
   # Profile
   resource :profile, controller: 'users', only: %i[edit update]
 
+  # VIN lookup
+  get '/vin_lookup', to: 'vin_lookups#show', as: :vin_lookup
+
   # Vehicles with nested resources
   resources :vehicles do
     resources :fuel_logs do
@@ -34,6 +37,7 @@ Rails.application.routes.draw do
     resource :report, only: [:show]
     resource :cost_summary, only: [:show]
     resource :history, only: [:show], controller: 'vehicle_histories'
+    resource :fuel_trend, only: [:show]
   end
 
   # Health check

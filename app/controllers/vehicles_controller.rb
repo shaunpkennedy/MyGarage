@@ -71,7 +71,7 @@ class VehiclesController < ApplicationController
 
   def vehicle_params
     params.require(:vehicle).permit(
-      :title, :make, :model, :year,
+      :title, :make, :model, :year, :vin,
       :current_odometer, :oil_change_frequency, :tire_rotation_frequency
     )
   end
